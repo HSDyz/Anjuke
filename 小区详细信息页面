@@ -1,0 +1,32 @@
+import pandas as pd
+import requests
+import numpy
+import os
+from time import sleep
+
+header = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.26",
+    "cookie": "SECKEY_ABVK=TxuiMOkUPCEVxW0KSF/xwuWBdqcX7fGjTF8JkUchVmA%3D; BMAP_SECKEY=TxuiMOkUPCEVxW0KSF_xwliAayRyzadk6lICZJbGGcew4iZG8nYHAbS8Flh3Zr6nsJIALG4HgDOohbHiEA9k5ZnWIvjt6lGynSLH1XU-sCunljZgQPbBjEbRALOqNoxVJFvULLbDa8LHvCCA8aLGrrRNvSBSBylOhFUiAmalATnD-w62nRqbEAjTgkYOcM6K; aQQ_ajkguid=E4F62704-9555-BF24-9DA6-C55AA0D068BD; ajk-appVersion=; seo_source_type=0; id58=CrIW6mU3d7+KG6UCIt6vAg==; isp=true; 58tj_uuid=4a424436-0a6d-4920-9c90-9e1aede9b933; als=0; sessid=B8541AA8-5B49-4B73-AC7A-C9D06086DB2B; ajk_member_id=227409702; ajk_member_verify=uQxQd%2BRMyDT5fR37iNzK9DsDS5iGcAv9izL2TnzKD6A%3D; ajk_member_verify2=MjI3NDA5NzAyfFJ5cEpNOVh8MQ%3D%3D; twe=2; _ga=GA1.2.2073842042.1698210881; _gid=GA1.2.1307498566.1698210881; fzq_h=c4974e108e0969bce3a2dfcbed9a11c7_1698237997568_1d6af5bce85f4096a7f4a2a814069fb2_3063315151; ctid=15; init_refer=https%253A%252F%252Fchengdu.anjuke.com%252F; new_session=1; new_uv=4; _gat=1; _ga_DYBJHZFBX2=GS1.2.1698238028.2.0.1698238028.0.0.0; fzq_js_anjuke_ershoufang_pc=f9eb182ac2ac3938e35026ce94889f04_1698238059723_23; fzq_js_anjuke_xiaoqu_pc=e3d89fdc7ebaf6a45251026119080352_1698238064169_24; obtain_by=2; ajkAuthTicket=TT=59524806d330eaa67606ab9fb9ce19a0&TS=1698238064636&PBODY=RViD27A4L_KYdU1-oGEL9KrasVLRRRqTUOUrBTkO8cS7KOeoGWVDHxJsFWnOStyObtkBL5md3iR3kRnn0C4lOe2VpA018oOKbdF_wnz7tieMOMu-4IAKMiB_13A2sXPZ-r9MZMKYEnQV1SnfSisoxTwI2BRzFIBK6rlEJ1HTCYA&VER=2&CUID=5W2wnUVnBkt-PePU1fb61Qj5svAO2gEh; xxzl_cid=3353db81f92d4d5bbd2e1ad2ea24c837; xxzl_deviceid=DG0jkeDntvzdX4smAGByRPSsnz1ppzypi2Jfh0x1a0uWQeBWw0tMQdp5U6SJZzGd"}
+data = pd.read_excel('D:\PublicAccount\web_data.xlsx')
+start_index = 1
+for i in range(1250):
+    addr = 'D://PublicAccount/com_data/' + str(i) + '_1.html'
+    if os.path.exists(addr):
+        start_index = i + 1
+
+for i in range(start_index, 1250):
+    url = data.iloc[i]['小区网址']
+    resp = requests.get(url=url,headers=header)
+    page_data = resp.text
+    resp.close()
+    addr = 'D://PublicAccount/com_data/' + str(i) + '_1.html'
+    with open(addr,'w+',encoding='utf-8') as f:
+        f.write(page_data)
+    print(i,'Finished')
+    sleep(20)
+try:
+    if i == 1249:
+        raise Exception("数据不足1250条")
+except Exception as e:
+    print("异常信息：", str(e))
+    print("最后一个文件的名字是：", str(i-1) + "_1.html")
