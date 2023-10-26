@@ -1,0 +1,29 @@
+import pandas as pd
+from lxml import etree
+import numpy
+
+parser = etree.HTMLParser(encoding = 'utf-8')
+Df = pd.DataFrame(columns=('小区名','小区网址','是否临近地铁'))
+
+num = 0
+for i in range(1,51):
+    file_addr = 'D://PublicAccount/' + str(i) + '.html'
+    page = etree.parse(file_addr,parser=parser)
+    for j in range(1,26):
+        web = page.xpath('/html/body/div[1]/div/div/section/section[3]/section/div[2]/a[' + str(j) + ']/@href')
+        name = page.xpath('/html/body/div[1]/div/div/section/section[3]/section/div[2]/a[' + str(j) + ']/div[2]/div[1]/div/text()')
+        subway_flag = page.xpath('/html/body/div[1]/div/div/section/section[3]/section/div[2]/a[' + str(j) + ']/div[2]/div[3]/span[1]/@style')
+        if subway_flag:  # 检查subway_flag是否非空
+            if subway_flag[0] == 'display:;':
+                subway = '是'
+            else:
+                subway = '否'
+        else:
+            subway = '未知'
+        if name and web:  # 检查name和web是否非空
+            Df.loc[num] = [name[0],web[0],subway]
+            num = num + 1
+        
+Df.to_excel('D:\PublicAccount\web_data.xlsx',index = False)
+data = pd.read_excel('D:\PublicAccount\web_data.xlsx')
+data.head()
