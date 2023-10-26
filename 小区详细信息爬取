@@ -1,0 +1,37 @@
+import pandas as pd
+from lxml import etree
+
+parser = etree.HTMLParser(encoding='utf-8')
+num = 0
+Df = pd.DataFrame(columns=('小区名', '地址', '物业类型', '竣工时间', '总户数', '总建筑面积', '容积率', '建筑类型', '所属商圈', '物业公司'))
+Start = input("请输入任务总数：")
+for i in range(int(Start)):
+    file_addr = 'D://PublicAccount/com_data/' + str(i) + '_1.html'
+    page = etree.parse(file_addr, parser=parser)
+    addr = page.xpath('/html/body/div[1]/div/div/div[2]/div[2]/div/p/text()')
+    name = page.xpath('/html/body/div[1]/div/div/div[2]/div[2]/div/h1/text()')
+    type_ = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[1]/div[2]/div[1]/text()")
+    time = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[3]/div[2]/div[1]/text()")
+    house = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[5]/div[2]/div[1]/text()")
+    space = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[6]/div[2]/div[1]/text()")
+    ratio = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[7]/div[2]/div[1]/text()")
+    build = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[9]/div[2]/div[1]/text()")
+    commercial = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[10]/div[2]/div[1]/text()")
+    company = page.xpath("/html/body/div[1]/div/div/div[2]/div[3]/div[2]/div/div[2]/div/div[11]/div[2]/div[1]/text()")
+
+    Df.loc[num] = [name[0] if name else None, 
+                   addr[0] if addr else None, 
+                   type_[0].lstrip() if type_ else None,
+                   time[0].lstrip() if time else None,
+                   house[0].lstrip() if house else None,
+                   space[0].lstrip() if space else None,
+                   ratio[0].lstrip() if ratio else None,
+                   build[0].lstrip() if build else None,
+                   commercial[0].lstrip() if commercial else None,
+                   company[0].lstrip() if company else None]
+    num = num + 1
+    print(num, 'Finished')      
+
+Df.to_excel('D:\PublicAccount\message_data.xlsx', index=False)
+data = pd.read_excel('D:\PublicAccount\message_data.xlsx')
+data.head()
